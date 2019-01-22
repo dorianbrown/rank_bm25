@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import math
-from multiprocessing import cpu_count, Pool
 import numpy as np
 
 
@@ -16,27 +15,35 @@ import numpy as np
 # pd.read_pickle("/data/reuters/normalized_text_df.pkl")
 
 class BM25:
-    def __init__(self, corpus, algorithm="atire"):
-        """
-        Parameters
-        ----------
-        corpus : list of list of str
-            Given corpus.
-        """
+    def __init__(self, corpus):
         self.corpus_size = len(corpus)
         self.avgdl = 0
         self.doc_freqs = []
         self.idf = {}
         self.doc_len = []
 
-        self.k1 = 1.5
-        self.b = 0.75
-        self.epsilon = 0.25
-
         self._initialize(corpus)
 
-    def _initialize(self, corpus, algorithm):
-        """Calculates frequencies of terms in documents and in corpus. Also computes inverse document frequencies."""
+    # TODO: Move avgdl and doc_freqs to BM25. Pass calculated info to new class _calc_idf
+    def _initialize(self, corpus):
+        raise NotImplementedError()
+
+    def get_scores(self, query):
+        raise NotImplementedError()
+
+
+class BM25Atire(BM25):
+    def __init__(self, corpus, k1=1.5, b=0.75, epsilon=0.25):
+        self.k1 = k1
+        self.b = b
+        self.epsilon = epsilon
+        super().__init__(corpus)
+
+    def _initialize(self, corpus):
+        """
+        Calculates frequencies of terms in documents and in corpus.
+        Also computes inverse document frequencies.
+        """
         nd = {}  # word -> number of documents with word
         num_doc = 0
         for document in corpus:
@@ -62,9 +69,6 @@ class BM25:
         # idf can be negative if word is contained in more than half of documents
         negative_idfs = []
 
-        if algorithm == "atire":
-            self.idf = self.calc_atire_idf
-
         for word, freq in nd.items():
             idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
             self.idf[word] = idf
@@ -77,7 +81,7 @@ class BM25:
         for word in negative_idfs:
             self.idf[word] = eps
 
-    def get_atire_scores(self, query):
+    def get_scores(self, query):
         """
         The ATIRE BM25 variant uses an idf function which uses a log(idf) score. To prevent negative idf scores,
         this algorithm also adds a floor to the idf value of epsilon.
@@ -96,27 +100,74 @@ class BM25:
             print(f"Avg Doc Length: {self.avgdl}")
             score += (self.idf[q] or 0) * (q_freq * (self.k1 + 1) /
                                            (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
-
         return score
 
-    def get_bm25l_scores(self, query):
-        return
 
-    def get_bm25plus_scores(self, query):
-        return
+class BM25L(BM25):
+    def __init__(self, corpus, k1=1.5, b=0.75, delta=0.1):
+        # Algorithm specific parameters
+        self.k1 = k1
+        self.b = b
+        self.delta = delta
+        super().__init__(corpus)
 
-    def get_bm25adpt_scores(self, query):
-        return
-
-    def get_bm25t_scores(self, query):
-        return
-
-    def get_bm25rousvar_scores(self, query):
+    def _initialize(self, corpus):
         """
-        Rousseau, F., M. Vazirgiannis, Composition of TF normalizations: new insights on scoring functions for ad hoc IR
+        Calculates frequencies of terms in documents and in corpus.
+        Also computes inverse document frequencies.
+        """
+        nd = {}  # word -> number of documents with word
+        num_doc = 0
+        for document in corpus:
+            self.doc_len.append(len(document))
+            num_doc += len(document)
+
+            frequencies = {}
+            for word in document:
+                if word not in frequencies:
+                    frequencies[word] = 0
+                frequencies[word] += 1
+            self.doc_freqs.append(frequencies)
+
+            for word, freq in frequencies.items():
+                if word not in nd:
+                    nd[word] = 0
+                nd[word] += 1
+
+        self.avgdl = num_doc / self.corpus_size
+        # collect idf sum to calculate an average idf for epsilon value
+        idf_sum = 0
+        # collect words with negative idf to set them a special epsilon value.
+        # idf can be negative if word is contained in more than half of documents
+        negative_idfs = []
+
+        for word, freq in nd.items():
+            idf = math.log(self.corpus_size + 1) - math.log(freq + 0.5)
+            self.idf[word] = idf
+            idf_sum += idf
+            if idf < 0:
+                negative_idfs.append(word)
+        self.average_idf = idf_sum / len(self.idf)
+
+        eps = self.epsilon * self.average_idf
+        for word in negative_idfs:
+            self.idf[word] = eps
+
+    def get_scores(self, query):
+        """
         :param query:
         :return:
         """
-        return
-
-class BM25_atire(BM25):
+        score = np.zeros(self.corpus_size)
+        doc_len = np.array(self.doc_len)
+        for q in query:
+            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+            print(f"Query term=: {q}")
+            print(f"IDF of q: {self.idf[q] or 0}")
+            print(f"Document frequency: {q_freq}")
+            print(f"Document length: {doc_len}")
+            print(f"Avg Doc Length: {self.avgdl}")
+            ctd = q_freq / (1 - self.b + self.b * doc_len/self.avgdl)
+            score += (self.idf[q] or 0) * q_freq * (self.k1 + 1) * (ctd + self.delta) / \
+                     (self.k1 + ctd + self.delta)
+        return score
