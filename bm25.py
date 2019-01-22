@@ -103,6 +103,7 @@ class BM25Atire(BM25):
         return score
 
 
+# TODO: Test for correctness
 class BM25L(BM25):
     def __init__(self, corpus, k1=1.5, b=0.75, delta=0.1):
         # Algorithm specific parameters
@@ -148,10 +149,6 @@ class BM25L(BM25):
             if idf < 0:
                 negative_idfs.append(word)
         self.average_idf = idf_sum / len(self.idf)
-
-        eps = self.epsilon * self.average_idf
-        for word in negative_idfs:
-            self.idf[word] = eps
 
     def get_scores(self, query):
         """
