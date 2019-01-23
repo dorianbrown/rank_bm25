@@ -1,17 +1,59 @@
-from bm25 import BM25
+from rank_bm25.bm25 import BM25Atire, BM25L, BM25Plus
 
-corpus1 = ["A A B B C", "B B C D"]
-corpus1 = [s.split(" ") for s in corpus1]
+from sklearn.datasets import fetch_20newsgroups
+from email.parser import Parser
+from multiprocessing import Pool
 
-corpus2 = ["The quick brown fox", "The slow brown dog", "Jumping jack flash"]
-corpus2 = [s.split(" ") for s in corpus2]
+import re
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import LancasterStemmer
+
+parser = Parser()
+ls = LancasterStemmer()
+
+
+def get_email_body(email_txt):
+    msg = parser.parsestr(email_txt)
+    return msg.get_payload()
+
+
+def preprocess_doc(doc):
+    doc = doc.strip()  # Remove leading/trailing ws
+    doc = doc.lower()  # Lowercase all characters
+    doc = re.sub(r'[^\w\s]', '', doc)  # remove punctuation
+    doc = re.sub(r'\s+', ' ', doc)  # replace any whitespace characters with a space
+    words = word_tokenize(doc, language='english')
+    words = [w for w in words if w not in stopwords.words('english')]
+    words = [ls.stem(w) for w in words]
+    return words
+
+
+news = fetch_20newsgroups()
+email_body = [get_email_body(email) for email in news.data]
+pool = Pool()
+corpus = pool.map(preprocess_doc, email_body)
 
 
 def test_corpus_loading():
-    bm25_1 = BM25(corpus1)
+    query_list = [
+        "religious fanatics",
+        "beefy computer specifications",
+        "pain joint inflammation"
+    ]
 
-    assert (bm25_1.corpus_size == 2)
-    assert (bm25_1.avgdl == 4.5)
-    assert (bm25_1.doc_freqs == [{'A': 2, 'B': 2, 'C': 1}, {'B': 2, 'C': 1, 'D': 1}])
-    assert (bm25_1.idf == {'A': 0.0, 'B': -0.20117973905426256, 'C': -0.20117973905426256, 'D': 0.0})
-    assert (bm25_1.doc_len == [5, 4])
+    bma = BM25Atire(corpus)
+    bml = BM25L(corpus)
+    bmp = BM25Plus(corpus)
+
+    def evaluate_q(queries, model):
+        print(f"\nEvaluation {model}", "\n", "-"*100)
+        for q in queries:
+            print("Query:", q)
+            print(f"Normalized query: {preprocess_doc(q)}", "\n", "-"*100)
+            for doc in model.get_top_n(preprocess_doc(q), email_body, 1):
+                print(doc[:1000], "\n", "-"*80)
+
+    evaluate_q(query_list, bma)
+    evaluate_q(query_list, bml)
+    evaluate_q(query_list, bmp)
