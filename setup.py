@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
    name='rank_bm25',
-   version='1.0',
+   version='0.1',
    description='Various BM25 algorithms for document ranking',
    author='D. Brown',
    author_email='dorianstuartbrown@gmail.com',
