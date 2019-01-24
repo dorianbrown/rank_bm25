@@ -1,15 +1,25 @@
-# Rank_BM25: Pip install Search Engine
+# Rank_BM25: A two line search engine
+
 A collection of algorithms for querying a set of documents and returning the ones most relevant to the query. The most common use case for these algorithms is, as you might have guessed, to create search engines.
+
+So far the algorithms that have been implemented are:
+- Okapi BM25
+- BM25L
+- BM25+
+
+Todo:
+- BM25-Adpt
+- BM25T 
 
 These algorithms were taken from [this paper](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf), which gives a nice overview of each method, and also benchmarks them against each other. A nice inclusion is that they compare different kinds of preprocessing like stemming vs no-stemming, stopword removal or not, etc. Great read if you're new to the subject. 
 ## Usage
-For this example we'll be using the `BM25Atire` algorithm, but the others are used in pretty much the same way.
+For this example we'll be using the `BM25Okapi` algorithm, but the others are used in pretty much the same way.
 
 ### Initalizing
 
-First thing to do is create an instance of the algorithm, which reads in a corpus of text and does some indexing on it:
+First thing to do is create an instance of the BM25 class, which reads in a corpus of text and does some indexing on it:
 ```python
-from rank_bm25 import BM25Atire
+from rank_bm25 import BM25Okapi
 
 corpus = [
     "Hello there good man!",
@@ -19,8 +29,8 @@ corpus = [
 
 tokenized_corpus = [doc.split(" ") for doc in corpus]
 
-bm25 = BM25Atire(corpus)
-# <rank_bm25.BM25Atire at 0x1047881d0>
+bm25 = BM25Okapi(corpus)
+# <rank_bm25.BM25Okapi at 0x1047881d0>
 ```
 Note that this package doesn't do any text preprocessing. If you want to do things like lowercasing, stopword removal, stemming, etc, you need to do it yourself. 
 

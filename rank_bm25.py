@@ -63,7 +63,7 @@ class BM25:
         return [documents[i] for i in top_n]
 
 
-class BM25Atire(BM25):
+class BM25Okapi(BM25):
     def __init__(self, corpus, k1=1.5, b=0.75, epsilon=0.25):
         self.k1 = k1
         self.b = b

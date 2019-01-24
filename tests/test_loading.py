@@ -1,4 +1,4 @@
-from rank_bm25 import BM25Atire, BM25L, BM25Plus
+from rank_bm25 import BM25Okapi, BM25L, BM25Plus
 
 corpus = [
     "Hello there good man!",
@@ -10,7 +10,7 @@ corpus = [
 def test_corpus_loading():
 
     algs = [
-        BM25Atire(corpus),
+        BM25Okapi(corpus),
         BM25L(corpus),
         BM25Plus(corpus)
     ]
