@@ -7,6 +7,6 @@ setup(
    author='D. Brown',
    author_email='dorianstuartbrown@gmail.com',
    license='LICENSE',
-   packages=['rank_bm25'],
+   py_modules=['rank_bm25'],
    install_requires=['numpy'],
 )
