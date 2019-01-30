@@ -54,4 +54,4 @@ def test_tokenizer_speed():
     BM25Okapi(corpus[:1]*100000, tokenizer=tokenizer)
     t1 = time()
     exec_time = t1-t0
-    assert exec_time < 50*cpu_count()
+    assert exec_time < 50/cpu_count()
