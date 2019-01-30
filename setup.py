@@ -24,4 +24,11 @@ setup(
     license='Apache2.0',
     py_modules=['rank_bm25'],
     install_requires=['numpy'],
+    extras_require={
+            'dev': [
+                'pytest',
+                'pytest-cov',
+                'nltk'
+            ]
+        }
 )
