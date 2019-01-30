@@ -25,10 +25,10 @@ setup(
     py_modules=['rank_bm25'],
     install_requires=['numpy'],
     extras_require={
-            'dev': [
-                'pytest',
-                'pytest-cov',
-                'nltk'
-            ]
-        }
+        'dev': [
+            'pytest',
+            'pytest-cov',
+            'nltk'
+        ]
+    }
 )

@@ -6,4 +6,5 @@ python:
 install:
   - pip install -e .[dev]
 script:
+  - python -c "import nltk; nltk.download('punkt')"
   - python -m pytest tests
