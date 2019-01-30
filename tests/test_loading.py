@@ -8,6 +8,7 @@ import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from time import time
+from multiprocessing import cpu_count
 
 corpus = [
     "Hello there good man!",
@@ -53,4 +54,4 @@ def test_tokenizer_speed():
     BM25Okapi(corpus[:1]*100000, tokenizer=tokenizer)
     t1 = time()
     exec_time = t1-t0
-    assert exec_time < 10
+    assert exec_time < 1*cpu_count()
