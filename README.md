@@ -1,4 +1,4 @@
-# Rank_BM25: A two line search engine
+# Rank-BM25: A two line search engine
 
 A collection of algorithms for querying a set of documents and returning the ones most relevant to the query. The most common use case for these algorithms is, as you might have guessed, to create search engines.
 
@@ -11,7 +11,18 @@ Todo:
 - BM25-Adpt
 - BM25T 
 
-These algorithms were taken from [this paper](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf), which gives a nice overview of each method, and also benchmarks them against each other. A nice inclusion is that they compare different kinds of preprocessing like stemming vs no-stemming, stopword removal or not, etc. Great read if you're new to the subject. 
+These algorithms were taken from [this paper](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf), which gives a nice overview of each method, and also benchmarks them against each other. A nice inclusion is that they compare different kinds of preprocessing like stemming vs no-stemming, stopword removal or not, etc. Great read if you're new to the topic. 
+
+## Installation
+The easiest way to install this package is through `pip`, using
+```bash
+pip install rank_bm25
+```
+If you want to be sure you're getting the newest version, you can install it directly from github with
+```bash
+pip install git+ssh://git@github.com/dorianbrown/rank_bm25.git
+```
+
 ## Usage
 For this example we'll be using the `BM25Okapi` algorithm, but the others are used in pretty much the same way.
 
@@ -54,13 +65,3 @@ bm25.get_top_n(tokenized_query, corpus, n=1)
 # ['It is quite windy in London']
 ```
 And that's pretty much it!
-
-## Installation
-The easiest way to install this package is through `pip`, using
-```bash
-pip install rank_bm25
-```
-If you want to be sure you're getting the newest version, you can install it directly from github wth
-```bash
-pip install git+ssh://git@github.com/dorianbrown/rank_bm25.git
-```
