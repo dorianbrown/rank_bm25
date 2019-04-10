@@ -40,7 +40,7 @@ corpus = [
 
 tokenized_corpus = [doc.split(" ") for doc in corpus]
 
-bm25 = BM25Okapi(corpus)
+bm25 = BM25Okapi(tokenized_corpus)
 # <rank_bm25.BM25Okapi at 0x1047881d0>
 ```
 Note that this package doesn't do any text preprocessing. If you want to do things like lowercasing, stopword removal, stemming, etc, you need to do it yourself. 
