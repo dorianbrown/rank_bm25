@@ -3,7 +3,6 @@ python:
   - '3.5'
   - '3.6'
 os:
-  - windows
   - linux
   - osx
 install:
