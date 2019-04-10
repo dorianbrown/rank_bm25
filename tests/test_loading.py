@@ -5,7 +5,6 @@ sys.path.insert(0, myPath + '/../')
 
 from rank_bm25 import BM25Okapi, BM25L, BM25Plus
 import re
-from nltk.tokenize import word_tokenize
 
 
 corpus = [
@@ -22,18 +21,15 @@ algs = [
 ]
 
 
-def tokenizer(doc):
-    doc = doc.lower()
-    doc = re.sub(r"[^\w\s]+", "", doc)
-    words = word_tokenize(doc)
-    return words
-
-
 def test_corpus_loading():
     for alg in algs:
         assert alg.corpus_size == 3
         assert alg.avgdl == 5
         assert alg.doc_len == [4, 6, 5]
+
+
+def tokenizer(doc):
+    return doc.split(" ")
 
 
 def test_tokenizer():
