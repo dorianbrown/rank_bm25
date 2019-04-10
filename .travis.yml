@@ -1,15 +1,17 @@
 language: python
 python:
-  - "3.5"
-  - "3.6"
+- '3.5'
+- '3.6'
 install:
-  - pip install -e .[dev]
+- pip install -e .[dev]
 test:
-  - python -c "import nltk; nltk.download('punkt')"
-  - pytest
+- pytest
 deploy:
   provider: pypi
-  user: ""
-  password: ""
+  user:
+    secure: LVQg+RKCZ6c8QL1bnHVgWnvCfD63Q69tBtsQjKea+vVrgOAPREShwRh5TBXSMD37JHRHnJbYAjm8H3QZ5bnGI8egyz0Hfr+jAx44hvmQ1r1L9rSudGuA6SSCz+IUQjK9f+AOZA/vQAa0StJxnf+Rmq6XuLBVskVmgaaJUA4wq6x4OF/6yrleYfKBAoZsHS9gUwXy44b5k9p2I0mGFzWbhFDlZWL6F2+ZDZiDWg7S5di68PjT6p0OYbmnPTkYsq1kdG4l4YyovVm5gVCku+2Rn2DZGppDadSqWAvSsJ3615Z1zS9vrfZQkYZRLC6zu+1wpbCEdJVeIAWz0O9xFmfJFoyFhBHo4EeT0ccbUgGz+up7GuPFP0+A9H/iqirOSyp73xfdG/hoHEuS86Ugc63959q7DDp350EXbViJKgBjgSD5YAUMTKR99zJjfLkJ8o3D4EdCfKVm3/Cxc4uqJXlPf8pvsnBbg8C8N4OPhboHt6XIEmO/f6LxomBbFfQC9RwM2Hzm07a3NXk3y5ibvhOB7JAN/QTvQ7ubeQLI9zOK55lUL9IFv/zdrNiLP3VMdn+UvKEvebpMwA/95n5oABo+gxjagWFnvf89pznv5CS02gDtuNY9rOloU3FkxvkgCJy4RBaleEX+T9TxIGy+em3ZBk1eJTYiMDotYhfS3XIdLFY=
+  password:
+    secure: Ku6s3cX3VHIk06/fXUunkgAGsl3UsJir8XkrpNAUc4V6HYwXBrIeuNixRH+2EAiva7RXiNbRvcHJEmXzAdOS7CKfkm4zWBNtdfCNNgb3IiFzH7xotd0a9gNq6L6WEYRw/eI2/B97HlHT6BqCU6SVf4oZ4Jbhb3u77nftalWbnpJZtgKwciFqCI4evABiHcyVp5m6BFRuMCj+K2crmXxF18la9Gx0LkO/QHCH7uxPUk264mHXxBQ851katbAKE1l3xr4vv+aOYvxpeoh9DZBrH6mO6yAXM33Mt8xJUjLI+ZrFzlBM7HgOz9VnBSJqX/1b+ER8Wsot185cOQQzZNDIia16VwdpnUJLoMdzEmmbTa6nv0X/5rIztRBxocVYAuILdn3mTPLDjfqs7OnqFHbVfoHh5OEd3ZAMKWq4f3wzodXhWijLzMM5MiBMpPFS8e2t2x5smvCCu29bt1RJAnEV17BwRK1DG2riECdGahM6MnSyv81rdPLyUUDyrZJisJ8wMHJaHaHim4LtBWJzIdCRr/hB+ENnPxvnUR0DBFUx1xN3Ld8JvxjRIbFcSXGTWCrNUKAjeo3d3Xn38Nih+Cxowl2ouCFO7O5fsEKxvYiqQM80V3cIV0AeRdSY07Q8nYIOh5QTvoZ261JDPfbDnhMeyWazWjUcF5LSp4fMvmsOzSI=
+  skip_existing: true
   on:
     branch: master
