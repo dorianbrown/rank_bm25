@@ -26,8 +26,7 @@ setup(
     install_requires=['numpy'],
     extras_require={
         'dev': [
-            'pytest',
-            'nltk'
+            'pytest'
         ]
     }
 )
