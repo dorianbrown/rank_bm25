@@ -1,11 +1,15 @@
 language: python
 python:
-- '3.5'
-- '3.6'
+  - '3.5'
+  - '3.6'
+os:
+  - windows
+  - linux
+  - osx
 install:
-- pip install -e .[dev]
+  - pip install -e .[dev]
 script:
-- pytest
+  - pytest
 deploy:
   provider: pypi
   user:
