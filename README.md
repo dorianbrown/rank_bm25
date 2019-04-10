@@ -1,5 +1,8 @@
 # Rank-BM25: A two line search engine
 
+[![Build Status](https://travis-ci.org/dorianbrown/rank_bm25.svg?branch=master)](https://travis-ci.org/dorianbrown/rank_bm25)
+[![PyPI version](https://badge.fury.io/py/rank-bm25.svg)](https://badge.fury.io/py/rank-bm25)
+
 A collection of algorithms for querying a set of documents and returning the ones most relevant to the query. The most common use case for these algorithms is, as you might have guessed, to create search engines.
 
 So far the algorithms that have been implemented are:
