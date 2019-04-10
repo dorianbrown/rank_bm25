@@ -20,7 +20,7 @@ setup(
     long_description_content_type='text/markdown',
     author='D. Brown',
     author_email='dorianstuartbrown@gmail.com',
-    url="https://github.com/dorianbrown/bm25",
+    url="https://github.com/dorianbrown/rank_bm25",
     license='Apache2.0',
     py_modules=['rank_bm25'],
     install_requires=['numpy'],
