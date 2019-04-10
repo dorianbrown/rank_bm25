@@ -5,7 +5,7 @@ python:
 install:
 - pip install -e .[dev]
 test:
-- pytest
+- script: pytest
 deploy:
   provider: pypi
   user:
