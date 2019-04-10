@@ -4,8 +4,8 @@ python:
 - '3.6'
 install:
 - pip install -e .[dev]
-test:
-- script: pytest
+script:
+- pytest
 deploy:
   provider: pypi
   user:
