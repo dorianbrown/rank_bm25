@@ -6,13 +6,11 @@
 A collection of algorithms for querying a set of documents and returning the ones most relevant to the query. The most common use case for these algorithms is, as you might have guessed, to create search engines.
 
 So far the algorithms that have been implemented are:
-- Okapi BM25
-- BM25L
-- BM25+
-
-Todo:
-- BM25-Adpt
-- BM25T 
+- [x] Okapi BM25
+- [x] BM25L
+- [x] BM25+
+- [ ] BM25-Adpt
+- [ ] BM25T 
 
 These algorithms were taken from [this paper](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf), which gives a nice overview of each method, and also benchmarks them against each other. A nice inclusion is that they compare different kinds of preprocessing like stemming vs no-stemming, stopword removal or not, etc. Great read if you're new to the topic. 
 
