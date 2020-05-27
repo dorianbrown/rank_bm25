@@ -42,9 +42,16 @@ class BM25:
             self.doc_freqs.append(frequencies)
 
             for word, freq in frequencies.items():
-                if word not in nd:
+                # It reduces time complexity of this function.
+                try:
+                    nd[word]+=1
+                except:
                     nd[word] = 0
-                nd[word] += 1
+                    nd[word] += 1
+
+#                 if word not in nd:
+#                     nd[word] = 0
+#                 nd[word] += 1
 
         self.avgdl = num_doc / self.corpus_size
         return nd
