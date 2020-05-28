@@ -45,7 +45,7 @@ class BM25:
                 # It reduces time complexity of this function.
                 try:
                     nd[word]+=1
-                except:
+                except KeyError:
                     nd[word] = 0
                     nd[word] += 1
 
