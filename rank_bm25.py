@@ -8,7 +8,7 @@ from multiprocessing import Pool, cpu_count
 All of these algorithms have been taken from the paper:
 Trotmam et al, Improvements to BM25 and Language Models Examined
 
-Here we implement all the BM25 variations mentioned. 
+Here we implement all the BM25 variations mentioned.
 """
 
 
@@ -231,25 +231,33 @@ class BM25Plus(BM25):
 #                                                (self.k1 * (1 - self.b + self.b * doc_len / self.avgdl) + q_freq))
 #         return score
 #
-#
-# class BM25T(BM25):
-#     def __init__(self, corpus, k1=1.5, b=0.75, delta=1):
-#         # Algorithm specific parameters
-#         self.k1 = k1
-#         self.b = b
-#         self.delta = delta
-#         super().__init__(corpus)
-#
-#     def _calc_idf(self, nd):
-#         for word, freq in nd.items():
-#             idf = math.log((self.corpus_size + 1) / freq)
-#             self.idf[word] = idf
-#
-#     def get_scores(self, query):
-#         score = np.zeros(self.corpus_size)
-#         doc_len = np.array(self.doc_len)
-#         for q in query:
-#             q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
-#             score += (self.idf.get(q) or 0) * (self.delta + (q_freq * (self.k1 + 1)) /
-#                                                (self.k1 * (1 - self.b + self.b * doc_len / self.avgdl) + q_freq))
-#         return score
+class BM25T(BM25):
+    def __init__(self, corpus,tokenizer=None, k1=1.5, b=0.75, delta=1):
+        # Algorithm specific parameters
+        self.k1 = k1
+        self.b = b
+        self.delta = delta
+        super().__init__(corpus,tokenizer)
+
+    def _calc_idf(self, nd):
+        self.nd=nd
+        for word, freq in nd.items():
+            idf = math.log((self.corpus_size + 1) / freq)
+            self.idf[word] = idf
+
+    def get_scores(self, query):
+        score = np.zeros(self.corpus_size)
+        doc_len = np.array(self.doc_len)
+        k1dash_num=0
+        for q in query:
+            gk1=1
+            if self.k1!=1:
+                gk1=(self.k1/(self.k1-1))*np.log(self.k1)
+            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+
+            k1dash_num+=(np.log((q_freq)/(1 - self.b + (self.b * doc_len / self.avgdl))+1)) #This is the numerator while calculating kdash(the summation part)
+            k1dash=(gk1 -(k1dash_num/self.nd[q]))**2
+            k1dash=np.min(k1dash)
+            score += (self.idf.get(q) or 0) * (self.delta + (q_freq * (k1dash + 1)) /
+                                               (k1dash * (1 - self.b + self.b * doc_len / self.avgdl) + q_freq))
+        return score

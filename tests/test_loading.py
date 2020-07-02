@@ -3,7 +3,7 @@ import os
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
-from rank_bm25 import BM25Okapi, BM25L, BM25Plus
+from rank_bm25 import BM25Okapi, BM25L, BM25Plus,BM25T
 import re
 
 
@@ -21,6 +21,7 @@ algs = [
 ]
 
 
+
 def test_corpus_loading():
     for alg in algs:
         assert alg.corpus_size == 3
@@ -33,7 +34,17 @@ def tokenizer(doc):
 
 
 def test_tokenizer():
-    bm25 = BM25Okapi(corpus, tokenizer=tokenizer)
+
+    # bm25 = BM25Okapi(corpus, tokenizer=tokenizer)
+    bm25 = BM25T(corpus, tokenizer=tokenizer)
     assert bm25.corpus_size == 3
     assert bm25.avgdl == 5
     assert bm25.doc_len == [4, 6, 5]
+    query = "windy London"
+    tokenized_query = query.split(" ")
+    
+    doc_scores = bm25.get_scores(tokenized_query)
+    print(doc_scores)
+
+if __name__=='__main__':
+    test_tokenizer()
