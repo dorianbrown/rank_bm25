@@ -1,6 +1,6 @@
 # Rank-BM25: A two line search engine
 
-[![Build Status](https://travis-ci.org/dorianbrown/rank_bm25.svg?branch=master)](https://travis-ci.org/dorianbrown/rank_bm25)
+[![Build Status](https://github.com/dorianbrown/rank_bm25/workflows/Pytest/badge.svg)
 [![PyPI version](https://badge.fury.io/py/rank-bm25.svg)](https://badge.fury.io/py/rank-bm25)
 [![DOI](https://zenodo.org/badge/166720547.svg)](https://zenodo.org/badge/latestdoi/166720547)
 
