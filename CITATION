@@ -1,0 +1,8 @@
+@software{rank_bm25,
+  author = {Dorian Brown},
+  title = {{Rank-BM25: A Collection of BM25 Algorithms in Python}},
+  year = 2020,
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.4520057},
+  url = {https://doi.org/10.5281/zenodo.4520057}
+}
