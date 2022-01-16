@@ -14,7 +14,7 @@ Here we implement all the BM25 variations mentioned.
 
 class BM25:
     def __init__(self, corpus, tokenizer=None):
-        self.corpus_size = len(corpus)
+        self.corpus_size = 0
         self.avgdl = 0
         self.doc_freqs = []
         self.idf = {}
@@ -46,6 +46,8 @@ class BM25:
                     nd[word]+=1
                 except KeyError:
                     nd[word] = 1
+
+            self.corpus_size += 1
 
         self.avgdl = num_doc / self.corpus_size
         return nd
