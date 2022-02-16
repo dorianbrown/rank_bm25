@@ -2,6 +2,8 @@ from setuptools import setup
 import io
 import os
 
+from version import get_version
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 short_description = 'Various BM25 algorithms for document ranking'
@@ -14,7 +16,7 @@ except FileNotFoundError:
 
 setup(
     name='rank_bm25',
-    version='0.2.1',
+    version=get_version(),
     description=short_description,
     long_description=long_description,
     long_description_content_type='text/markdown',
