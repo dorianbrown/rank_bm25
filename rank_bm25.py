@@ -15,9 +15,9 @@ Here we implement all the BM25 variations mentioned.
 class BM25:
     def __init__(self, corpus, tokenizer=None):
         self.corpus_size = 0
-        self.avgdl = 0
-        self.doc_freqs = []
-        self.idf = {}
+        self.avgdl = 0  # average length of a document in corpus
+        self.doc_freqs = []  # list of dictionaries of term_frequency of each document
+        self.idf = {}  # idf score of each word in whole corpus
         self.doc_len = []
         self.tokenizer = tokenizer
 
@@ -29,12 +29,12 @@ class BM25:
 
     def _initialize(self, corpus):
         nd = {}  # word -> number of documents with word
-        num_doc = 0
+        num_doc = 0  # total number of words in whole corpus
         for document in corpus:
-            self.doc_len.append(len(document))
-            num_doc += len(document)
+            self.doc_len.append(len(document))  # list of length of each document in corpus
+            num_doc += len(document)  # total number of words in whole corpus
 
-            frequencies = {}
+            frequencies = {}  # term frequency of each word in a document
             for word in document:
                 if word not in frequencies:
                     frequencies[word] = 0
@@ -47,9 +47,9 @@ class BM25:
                 except KeyError:
                     nd[word] = 1
 
-            self.corpus_size += 1
+            self.corpus_size += 1  # increases the size of corpus after each loop until the end of document in corpus
 
-        self.avgdl = num_doc / self.corpus_size
+        self.avgdl = num_doc / self.corpus_size  
         return nd
 
     def _tokenize_corpus(self, corpus):
