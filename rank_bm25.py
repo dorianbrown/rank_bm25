@@ -14,11 +14,11 @@ Here we implement all the BM25 variations mentioned.
 
 class BM25:
     def __init__(self, corpus, tokenizer=None):
-        self.corpus_size = 0
+        self.corpus_size = 0  # total number of document in corpus
         self.avgdl = 0  # average length of a document in corpus
         self.doc_freqs = []  # list of dictionaries of term_frequency of each document
         self.idf = {}  # idf score of each word in whole corpus
-        self.doc_len = []
+        self.doc_len = []  # list of length of each document in corpus
         self.tokenizer = tokenizer
 
         if tokenizer:
@@ -28,10 +28,13 @@ class BM25:
         self._calc_idf(nd)
 
     def _initialize(self, corpus):
+        """
+        Returns the number of documents with the word present
+        """
         nd = {}  # word -> number of documents with word
         num_doc = 0  # total number of words in whole corpus
         for document in corpus:
-            self.doc_len.append(len(document))  # list of length of each document in corpus
+            self.doc_len.append(len(document))
             num_doc += len(document)  # total number of words in whole corpus
 
             frequencies = {}  # term frequency of each word in a document
@@ -42,6 +45,10 @@ class BM25:
             self.doc_freqs.append(frequencies)
 
             for word, freq in frequencies.items():
+                """
+                    use excepting handling to find the number of document with word.
+                    if the word is present in document of corpus, increases the size of 'nd' for that word with 1 otherwise it will remain 1.
+                """
                 try:
                     nd[word]+=1
                 except KeyError:
@@ -49,7 +56,7 @@ class BM25:
 
             self.corpus_size += 1  # increases the size of corpus after each loop until the end of document in corpus
 
-        self.avgdl = num_doc / self.corpus_size  
+        self.avgdl = num_doc / self.corpus_size
         return nd
 
     def _tokenize_corpus(self, corpus):
@@ -110,12 +117,14 @@ class BM25Okapi(BM25):
         this algorithm also adds a floor to the idf value of epsilon.
         See [Trotman, A., X. Jia, M. Crane, Towards an Efficient and Effective Search Engine] for more info
         :param query:
+            tokenized document
         :return:
+            score of each token in each document in corpus
         """
-        score = np.zeros(self.corpus_size)
+        score = np.zeros(self.corpus_size)  # array of score of each token in a document in corpus
         doc_len = np.array(self.doc_len)
         for q in query:
-            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])  # term freq of a term 'q' in a document
             score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
                                                (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
         return score
