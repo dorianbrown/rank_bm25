@@ -153,7 +153,7 @@ class BM25L(BM25):
         for q in query:
             q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
             ctd = q_freq / (1 - self.b + self.b * doc_len / self.avgdl)
-            score += (self.idf.get(q) or 0) * q_freq * (self.k1 + 1) * (ctd + self.delta) / \
+            score += (self.idf.get(q) or 0) * (self.k1 + 1) * (ctd + self.delta) / \
                      (self.k1 + ctd + self.delta)
         return score
 
@@ -167,7 +167,7 @@ class BM25L(BM25):
         for q in query:
             q_freq = np.array([(self.doc_freqs[di].get(q) or 0) for di in doc_ids])
             ctd = q_freq / (1 - self.b + self.b * doc_len / self.avgdl)
-            score += (self.idf.get(q) or 0) * q_freq * (self.k1 + 1) * (ctd + self.delta) / \
+            score += (self.idf.get(q) or 0) * (self.k1 + 1) * (ctd + self.delta) / \
                      (self.k1 + ctd + self.delta)
         return score.tolist()
 
