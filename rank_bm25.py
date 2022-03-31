@@ -182,7 +182,7 @@ class BM25Plus(BM25):
 
     def _calc_idf(self, nd):
         for word, freq in nd.items():
-            idf = math.log((self.corpus_size + 1) / freq)
+            idf = math.log(self.corpus_size + 1) - math.log(freq)
             self.idf[word] = idf
 
     def get_scores(self, query):
