@@ -84,25 +84,23 @@ class BM25Okapi(BM25):
 
     def _calc_idf(self, nd):
         """
-        Calculates frequencies of terms in documents and in corpus.
-        This algorithm sets a floor on the idf values to eps * average_idf
+        calc idf
+        :param nd:
+        :return:
         """
-        # collect idf sum to calculate an average idf for epsilon value
-        idf_sum = 0
-        # collect words with negative idf to set them a special epsilon value.
-        # idf can be negative if word is contained in more than half of documents
-        negative_idfs = []
-        for word, freq in nd.items():
-            idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
-            self.idf[word] = idf
-            idf_sum += idf
-            if idf < 0:
-                negative_idfs.append(word)
-        self.average_idf = idf_sum / len(self.idf)
-
-        eps = self.epsilon * self.average_idf
-        for word in negative_idfs:
-            self.idf[word] = eps
+        # self.average_idf
+        # self.idf[word]
+        # eps = self.epsilon * self.average_idf
+        sum_idf = 0
+        for word in nd:
+            contains_word_count = 0
+            for doc_words_dict in self.doc_freqs:
+                if word in doc_words_dict:
+                    contains_word_count += 1
+            idf_val = math.log((self.corpus_size+1)/(contains_word_count+1))+1
+            self.idf[word] = idf_val
+            sum_idf += idf_val
+        self.average_idf = float(sum_idf) / len(self.idf)
 
     def get_scores(self, query):
         """
