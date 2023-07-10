@@ -98,7 +98,7 @@ class BM25Okapi(BM25):
             idf_sum += idf
             if idf < 0:
                 negative_idfs.append(word)
-        self.average_idf = idf_sum / len(self.idf)
+        self.average_idf = idf_sum / (len(self.idf) + 1e-9)
 
         eps = self.epsilon * self.average_idf
         for word in negative_idfs:
