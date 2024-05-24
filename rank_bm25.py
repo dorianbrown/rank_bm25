@@ -93,10 +93,7 @@ class BM25Okapi(BM25):
         # idf can be negative if word is contained in more than half of documents
         negative_idfs = []
         for word, freq in nd.items():
-            idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
-            # fix idf is 0 when a token is in exactly 50% of the documents.
-            if idf == 0.0:
-                idf = math.log(self.corpus_size + 1) - math.log(freq + 0.5)
+            idf = math.log(self.corpus_size + 1) - math.log(freq + 0.5)
             self.idf[word] = idf
             idf_sum += idf
             if idf < 0:
