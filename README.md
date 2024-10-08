@@ -17,6 +17,8 @@ So far the algorithms that have been implemented are:
 
 These algorithms were taken from [this paper](http://www.cs.otago.ac.nz/homepages/andrew/papers/2014-2.pdf), which gives a nice overview of each method, and also benchmarks them against each other. A nice inclusion is that they compare different kinds of preprocessing like stemming vs no-stemming, stopword removal or not, etc. Great read if you're new to the topic. 
 
+> For those looking to use this in large scale production environments, I'd recommend you take a look at something like [retriv](https://github.com/AmenRa/retriv), which is a much more performant python retrieval package. See [#25](https://github.com/dorianbrown/rank_bm25/issues/25)
+
 ## Installation
 The easiest way to install this package is through `pip`, using
 ```bash
