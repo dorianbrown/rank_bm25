@@ -4,6 +4,8 @@ import math
 import numpy as np
 from multiprocessing import Pool, cpu_count
 
+from exceptions import EmptyCorpusException
+
 """
 All of these algorithms have been taken from the paper:
 Trotmam et al, Improvements to BM25 and Language Models Examined
@@ -28,6 +30,8 @@ class BM25:
         self._calc_idf(nd)
 
     def _initialize(self, corpus):
+        if len(corpus) == 0:
+            raise EmptyCorpusException
         nd = {}  # word -> number of documents with word
         num_doc = 0
         for document in corpus:
@@ -43,7 +47,7 @@ class BM25:
 
             for word, freq in frequencies.items():
                 try:
-                    nd[word]+=1
+                    nd[word] += 1
                 except KeyError:
                     nd[word] = 1
 
