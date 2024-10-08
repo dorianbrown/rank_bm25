@@ -1,3 +1,8 @@
+import sys
+import os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 import pytest
 
 from rank_bm25 import BM25
