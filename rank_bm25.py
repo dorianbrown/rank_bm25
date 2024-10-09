@@ -103,6 +103,19 @@ class BM25Okapi(BM25):
         eps = self.epsilon * self.average_idf
         for word in negative_idfs:
             self.idf[word] = eps
+        ####
+        # precalc "half of divisor" + self.k1 * (1 - self.b + self.b * doc_lens / self.avg_doc_len)
+        self.hds = [self.k1 * (1 - self.b + self.b * this_doc_len / self.avgdl) for this_doc_len in self.doc_len]
+        # words * documents score map
+        self.wsmap = {}
+        for word in self.idf :
+          self.wsmap[word] = [0] * self.corpus_size
+          word_freqs = [ (word_freq.get(word) or 0) for word_freq in self.doc_freqs ]
+          thiswordidf = (self.idf.get(word) or 0)
+          for i in range(0,self.corpus_size) :
+            self.wsmap[word][i] = thiswordidf * ( word_freqs[i] * (self.k1 + 1) / ( word_freqs[i] + self.hds[i] ) )
+          # self.wsmap[word] = np.array(self.wsmap[word]) # This might help even more, but
+            
 
     def get_scores(self, query):
         """
@@ -119,7 +132,20 @@ class BM25Okapi(BM25):
             score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
                                                (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
         return score
-
+    
+    
+    # get a list of scores for every document
+    def get_scores2(self, tokenizedquery):
+        # zeroes list of scores
+        scores = [0] * self.corpus_size
+        # for each word in tokenizedquery, if word is in wsmap, lookup and add word score for every documents' scores
+        for word in tokenizedquery:
+            if word in self.wsmap:
+                for i in range(0, self.corpus_size):
+                    scores[i] += self.wsmap[word][i] # this could be just scores += self.wsmap[word] if they are numpy arrays
+        return scores
+    
+        
     def get_batch_scores(self, query, doc_ids):
         """
         Calculate bm25 scores between query and subset of all docs
