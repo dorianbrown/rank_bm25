@@ -96,13 +96,31 @@ class BM25Okapi(BM25):
             idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
             self.idf[word] = idf
             idf_sum += idf
-            if idf < 0:
-                negative_idfs.append(word)
-        self.average_idf = idf_sum / len(self.idf)
+        #     if idf < 0:
+        #         negative_idfs.append(word)
+        # self.average_idf = idf_sum / len(self.idf)
+        #
+        # eps = self.epsilon * self.average_idf
+        # for word in negative_idfs:
+        #     self.idf[word] = eps
 
-        eps = self.epsilon * self.average_idf
-        for word in negative_idfs:
-            self.idf[word] = eps
+        # 提取值为数字的条目
+        negative_values = [value for value in self.idf.values() if isinstance(value, (int, float)) and value < 0]
+
+        # 找到最小的负数
+        min_negative = min(negative_values) if negative_values else None
+
+        new_dict = {}
+        for word, idf in self.idf.items():
+            if idf > 0:
+                new_dict[word] = idf + 1
+            else:
+                min_value = min_negative - 0.1
+                max_value = 0
+                normalized = (idf - min_value) / (max_value - min_value)
+                new_dict[word] = normalized
+
+        self.idf = new_dict
 
     def get_scores(self, query):
         """
