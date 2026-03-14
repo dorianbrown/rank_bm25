@@ -17,9 +17,14 @@ Here we implement all the BM25 variations mentioned.
 # ---------------------------------------------------------------------------
 _csc_accel = None
 
+
 def _try_compile_csc_accel():
     """Compile a tiny C shared library for fast CSC column accumulation."""
-    import ctypes, subprocess, tempfile, sys, os
+    import ctypes
+    import subprocess
+    import tempfile
+    import sys
+    import os
     C_SRC = r"""
 #include <stdint.h>
 #include <string.h>
@@ -82,6 +87,7 @@ void csc_accumulate_i64(
     except Exception:
         return None
 
+
 _csc_accel = _try_compile_csc_accel()
 
 
@@ -137,8 +143,11 @@ class BM25:
         self.avgdl = num_doc / self.corpus_size
         self.doc_len = np.array(self.doc_len)
 
-        from scipy.sparse import csc_array
-        self._tf_matrix = csc_array(
+        try:
+            from scipy.sparse import csc_array as csc_sparse
+        except ImportError:
+            from scipy.sparse import csc_matrix as csc_sparse
+        self._tf_matrix = csc_sparse(
             (np.array(data, dtype=np.float64), (np.array(rows, dtype=np.int32), np.array(cols, dtype=np.int32))),
             shape=(self.corpus_size, len(self._vocab))
         )
