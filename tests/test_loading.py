@@ -25,7 +25,7 @@ def test_corpus_loading():
     for alg in algs:
         assert alg.corpus_size == 3
         assert alg.avgdl == 5
-        assert alg.doc_len == [4, 6, 5]
+        assert list(alg.doc_len) == [4, 6, 5]
 
 
 def tokenizer(doc):
@@ -36,4 +36,4 @@ def test_tokenizer():
     bm25 = BM25Okapi(corpus, tokenizer=tokenizer)
     assert bm25.corpus_size == 3
     assert bm25.avgdl == 5
-    assert bm25.doc_len == [4, 6, 5]
+    assert list(bm25.doc_len) == [4, 6, 5]

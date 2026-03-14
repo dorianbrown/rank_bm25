@@ -25,7 +25,7 @@ setup(
     url="https://github.com/dorianbrown/rank_bm25",
     license='Apache2.0',
     py_modules=['rank_bm25'],
-    install_requires=['numpy'],
+    install_requires=['numpy', 'scipy'],
     extras_require={
         'dev': [
             'pytest'
