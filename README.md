@@ -12,6 +12,7 @@ So far the algorithms that have been implemented are:
 - [x] Okapi BM25
 - [x] BM25L
 - [x] BM25+
+- [x] BM25F
 - [ ] BM25-Adpt
 - [ ] BM25T 
 
@@ -71,3 +72,28 @@ bm25.get_top_n(tokenized_query, corpus, n=1)
 # ['It is quite windy in London']
 ```
 And that's pretty much it!
+
+### Multi-field ranking with BM25F
+
+If your documents have multiple fields (e.g. title, body, tags), you can use `BM25F` to score them with per-field boosting. Unlike scoring each field separately and summing, BM25F combines term frequencies across fields *before* applying saturation, which avoids over-estimating the importance of terms that appear in multiple fields.
+
+```python
+from rank_bm25 import BM25F
+
+corpus = [
+    {"title": ["machine", "learning"], "body": ["introduction", "to", "machine", "learning"]},
+    {"title": ["deep", "neural", "networks"], "body": ["image", "recognition", "with", "CNNs"]},
+    {"title": ["natural", "language"], "body": ["text", "classification", "using", "transformers"]},
+]
+
+bm25f = BM25F(corpus, field_weights={"title": 2.0, "body": 1.0})
+
+scores = bm25f.get_scores(["machine", "learning"])
+```
+
+Parameters:
+- `field_weights`: boost weight per field (default 1.0 for all fields)
+- `field_b`: length normalization per field (default 0.75)
+- `k1`: saturation parameter (default 1.5)
+
+Documents can have different fields — missing fields are treated as empty. Like the other algorithms, `BM25F` also supports `get_batch_scores()`, `get_top_n()`, and the `tokenizer` parameter.
