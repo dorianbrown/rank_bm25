@@ -252,15 +252,11 @@ class BM25Okapi(BM25):
                 self._c_indices = np.ascontiguousarray(sm.indices, dtype=np.int64)
                 self._c_use_f32_score = False
             self._c_data = np.ascontiguousarray(sm.data, dtype=np.float64)
-            score_dtype = np.float32 if self._c_use_f32_score else np.float64
-            self._c_score_buf = np.empty(self.corpus_size, dtype=score_dtype)
-            self._c_wid_buf = np.empty(512, dtype=np.int64)
-            # Cache raw integer pointers (avoids typed pointer creation per call)
+            self._c_score_dtype = np.float32 if self._c_use_f32_score else np.float64
+            # Cache raw integer pointers for read-only arrays (avoids typed pointer creation per call)
             self._c_ptr_indptr = self._c_indptr.ctypes.data
             self._c_ptr_indices = self._c_indices.ctypes.data
             self._c_ptr_data = self._c_data.ctypes.data
-            self._c_ptr_score = self._c_score_buf.ctypes.data
-            self._c_ptr_wids = self._c_wid_buf.ctypes.data
             self._c_n_rows = ctypes.c_int64(self.corpus_size)
             self._c_int64 = ctypes.c_int64
             self._use_c_accel = True
@@ -294,7 +290,7 @@ class BM25Okapi(BM25):
 
     def _get_scores_c(self, query):
         vocab_get = self._vocab.get
-        wid_buf = self._c_wid_buf
+        wid_buf = np.empty(len(query), dtype=np.int64)
         n = 0
         for q in query:
             wid = vocab_get(q)
@@ -303,11 +299,12 @@ class BM25Okapi(BM25):
                 n += 1
         if n == 0:
             return np.zeros(self.corpus_size)
+        score_buf = np.empty(self.corpus_size, dtype=self._c_score_dtype)
         self._c_fn(
             self._c_ptr_indptr, self._c_ptr_indices, self._c_ptr_data,
-            self._c_ptr_wids, self._c_int64(n),
-            self._c_ptr_score, self._c_n_rows)
-        return self._c_score_buf.copy()
+            wid_buf.ctypes.data, self._c_int64(n),
+            score_buf.ctypes.data, self._c_n_rows)
+        return score_buf
 
     def get_batch_scores(self, query, doc_ids):
         """
