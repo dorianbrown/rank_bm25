@@ -37,3 +37,12 @@ def test_tokenizer():
     assert bm25.corpus_size == 3
     assert bm25.avgdl == 5
     assert bm25.doc_len == [4, 6, 5]
+
+
+def test_get_top_n_uses_constructor_tokenizer_for_query():
+    # A raw-string query must be tokenized the same way the corpus was; otherwise
+    # get_scores iterates it character-by-character and returns the wrong document.
+    bm25 = BM25Okapi(corpus, tokenizer=tokenizer)
+    assert bm25.get_top_n("windy London", corpus, n=1) == ["It is quite windy in London"]
+    # A pre-tokenized list query still works for a tokenizer-built index.
+    assert bm25.get_top_n(["windy", "London"], corpus, n=1) == ["It is quite windy in London"]
