@@ -70,6 +70,13 @@ class BM25:
 
         assert self.corpus_size == len(documents), "The documents given don't match the index corpus!"
 
+        # If the index was built with a tokenizer, apply it to a raw-string query
+        # too (mirroring how the constructor tokenizes the corpus); otherwise
+        # get_scores would iterate the string character-by-character and score
+        # every document 0. A pre-tokenized list query is left untouched.
+        if self.tokenizer and isinstance(query, str):
+            query = self.tokenizer(query)
+
         scores = self.get_scores(query)
         top_n = np.argsort(scores)[::-1][:n]
         return [documents[i] for i in top_n]
