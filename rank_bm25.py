@@ -124,7 +124,7 @@ class BM25Okapi(BM25):
         """
         Calculate bm25 scores between query and subset of all docs
         """
-        assert all(di < len(self.doc_freqs) for di in doc_ids)
+        assert all(0 <= di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
         doc_len = np.array(self.doc_len)[doc_ids]
         for q in query:
@@ -161,7 +161,7 @@ class BM25L(BM25):
         """
         Calculate bm25 scores between query and subset of all docs
         """
-        assert all(di < len(self.doc_freqs) for di in doc_ids)
+        assert all(0 <= di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
         doc_len = np.array(self.doc_len)[doc_ids]
         for q in query:
@@ -198,7 +198,7 @@ class BM25Plus(BM25):
         """
         Calculate bm25 scores between query and subset of all docs
         """
-        assert all(di < len(self.doc_freqs) for di in doc_ids)
+        assert all(0 <= di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
         doc_len = np.array(self.doc_len)[doc_ids]
         for q in query:
