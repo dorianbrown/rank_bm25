@@ -53,9 +53,8 @@ class BM25:
         return nd
 
     def _tokenize_corpus(self, corpus):
-        pool = Pool(cpu_count())
-        tokenized_corpus = pool.map(self.tokenizer, corpus)
-        return tokenized_corpus
+        with Pool(cpu_count()) as pool:
+            return pool.map(self.tokenizer, corpus)
 
     def _calc_idf(self, nd):
         raise NotImplementedError()

@@ -37,3 +37,21 @@ def test_tokenizer():
     assert bm25.corpus_size == 3
     assert bm25.avgdl == 5
     assert bm25.doc_len == [4, 6, 5]
+
+
+def failing_tokenizer(doc):
+    raise ValueError("invalid document")
+
+
+def test_tokenizer_failure_releases_pool():
+    import gc
+    import warnings
+    import pytest
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", ResourceWarning)
+        with pytest.raises(ValueError, match="invalid document"):
+            BM25Okapi(corpus, tokenizer=failing_tokenizer)
+        gc.collect()
+
+    assert not any("unclosed running multiprocessing pool" in str(w.message) for w in caught)
