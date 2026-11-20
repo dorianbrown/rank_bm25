@@ -126,7 +126,7 @@ class BM25Okapi(BM25):
         """
         assert all(di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
-        doc_len = np.array(self.doc_len)[doc_ids]
+        doc_len = np.array([self.doc_len[di] for di in doc_ids])
         for q in query:
             q_freq = np.array([(self.doc_freqs[di].get(q) or 0) for di in doc_ids])
             score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
@@ -163,7 +163,7 @@ class BM25L(BM25):
         """
         assert all(di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
-        doc_len = np.array(self.doc_len)[doc_ids]
+        doc_len = np.array([self.doc_len[di] for di in doc_ids])
         for q in query:
             q_freq = np.array([(self.doc_freqs[di].get(q) or 0) for di in doc_ids])
             ctd = q_freq / (1 - self.b + self.b * doc_len / self.avgdl)
@@ -200,7 +200,7 @@ class BM25Plus(BM25):
         """
         assert all(di < len(self.doc_freqs) for di in doc_ids)
         score = np.zeros(len(doc_ids))
-        doc_len = np.array(self.doc_len)[doc_ids]
+        doc_len = np.array([self.doc_len[di] for di in doc_ids])
         for q in query:
             q_freq = np.array([(self.doc_freqs[di].get(q) or 0) for di in doc_ids])
             score += (self.idf.get(q) or 0) * (self.delta + (q_freq * (self.k1 + 1)) /
