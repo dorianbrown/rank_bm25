@@ -20,6 +20,7 @@ class BM25:
         self.idf = {}
         self.doc_len = []
         self.tokenizer = tokenizer
+        self._postings = None  # word -> (doc indices, term frequencies), built on first get_scores()
 
         if tokenizer:
             corpus = self._tokenize_corpus(corpus)
@@ -59,6 +60,36 @@ class BM25:
 
     def _calc_idf(self, nd):
         raise NotImplementedError()
+
+    def _build_postings(self):
+        postings = {}
+        for doc_id, frequencies in enumerate(self.doc_freqs):
+            for word, freq in frequencies.items():
+                ids_tfs = postings.get(word)
+                if ids_tfs is None:
+                    ids_tfs = postings[word] = ([], [])
+                ids_tfs[0].append(doc_id)
+                ids_tfs[1].append(freq)
+        self._postings = {
+            word: (np.array(ids, dtype=np.int32), np.array(tfs, dtype=np.int32))
+            for word, (ids, tfs) in postings.items()
+        }
+
+    def _term_frequencies(self, word):
+        """
+        Frequency of `word` in every document, as a float array of length corpus_size.
+        Equivalent to np.array([(doc.get(word) or 0) for doc in self.doc_freqs]) (the values are
+        small integers, exactly representable as floats, so scores are bit-for-bit identical), but
+        it only touches the documents that contain the word instead of looping over the corpus.
+        """
+        if getattr(self, "_postings", None) is None:  # also covers objects pickled by older versions
+            self._build_postings()
+        q_freq = np.zeros(self.corpus_size)
+        posting = self._postings.get(word)
+        if posting is not None:
+            doc_ids, freqs = posting
+            q_freq[doc_ids] = freqs
+        return q_freq
 
     def get_scores(self, query):
         raise NotImplementedError()
@@ -115,7 +146,7 @@ class BM25Okapi(BM25):
         score = np.zeros(self.corpus_size)
         doc_len = np.array(self.doc_len)
         for q in query:
-            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+            q_freq = self._term_frequencies(q)
             score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
                                                (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
         return score
@@ -151,7 +182,7 @@ class BM25L(BM25):
         score = np.zeros(self.corpus_size)
         doc_len = np.array(self.doc_len)
         for q in query:
-            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+            q_freq = self._term_frequencies(q)
             ctd = q_freq / (1 - self.b + self.b * doc_len / self.avgdl)
             score += (self.idf.get(q) or 0) * (self.k1 + 1) * (ctd + self.delta) / \
                      (self.k1 + ctd + self.delta)
@@ -189,7 +220,7 @@ class BM25Plus(BM25):
         score = np.zeros(self.corpus_size)
         doc_len = np.array(self.doc_len)
         for q in query:
-            q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
+            q_freq = self._term_frequencies(q)
             score += (self.idf.get(q) or 0) * (self.delta + (q_freq * (self.k1 + 1)) /
                                                (self.k1 * (1 - self.b + self.b * doc_len / self.avgdl) + q_freq))
         return score
